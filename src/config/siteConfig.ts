@@ -1,7 +1,7 @@
 import type { SiteConfig } from "../types/config";
 
 // 定义站点语言
-const SITE_LANG = "en"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
+const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 
 export const siteConfig: SiteConfig = {
 	title: "YiCheng'S Blog",
@@ -33,7 +33,7 @@ export const siteConfig: SiteConfig = {
 		// 显示模式："text-icon" 显示图标+文本，"logo" 仅显示Logo
 		mode: "text-icon",
 		// 顶栏标题文本
-		text: "MizukiUI",
+		text: "yycc0324-lang",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
 		icon: "assets/home/home.webp",
 		// 网站Logo图片路径
@@ -52,7 +52,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	bilibili: {
-		vmid: "your-bilibili-vmid", // 在此处设置你的Bilibili用户ID (uid)，例如 "1129280784"
+		vmid: "1084234569", // 在此处设置你的Bilibili用户ID (uid)，例如 "1129280784"
 		fetchOnDev: false, // 是否在开发环境下获取 Bilibili 数据（默认 false）
 		coverMirror: "", // 封面图片镜像源（可选，如果需要使用镜像源，例如 "https://images.weserv.nl/?url="）
 		useWebp: true, // 是否使用WebP格式（默认 true）
@@ -143,7 +143,7 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "わたしの部屋", // 主页横幅主标题
+			title: "OPEN SOURCE", // 主页横幅主标题
 
 			subtitle: [
 				"特別なことはないけど、君がいると十分です",
