@@ -29,14 +29,14 @@ export const friendsData: FriendItem[] = [
 		siteurl: "https://docs.mizuki.mysqil.com",
 		tags: ["Docs"],
 	},
-	{
-		id: 3,
-		title: "Vercel",
-		imgurl: "https://avatars.githubusercontent.com/u/14985020?v=4&s=640",
-		desc: "Develop. Preview. Ship.",
-		siteurl: "https://vercel.com",
-		tags: ["Hosting", "Cloud"],
-	},
+	// {
+	// 	id: 3,
+	// 	title: "NPS",
+	// 	imgurl: "https://avatars.githubusercontent.com/u/14985020?v=4&s=640",
+	// 	desc: "Develop. Preview. Ship.",
+	// 	siteurl: "https://vercel.com",
+	// 	tags: ["Hosting", "Cloud"],
+	// },
 	{
 		id: 4,
 		title: "Tailwind CSS",

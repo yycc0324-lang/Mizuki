@@ -5,7 +5,6 @@ import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
 import { url } from "../../../utils/url-utils";
 import Image from "../../atoms/Image/Image.astro";
-import TypewriterText from "../../atoms/typewriter-text/TypewriterText.astro";
 ---
 
 <div class="card-base p-3">
@@ -44,17 +43,7 @@ import TypewriterText from "../../atoms/typewriter-text/TypewriterText.astro";
 		</div>
 
 		<div class="text-center text-neutral-400 mb-2.5 transition">
-			{
-				profileConfig.typewriter?.enable ? (
-					<TypewriterText
-						text={profileConfig.bio || ""}
-						speed={profileConfig.typewriter.speed}
-						class="inline-block"
-					/>
-				) : (
-					profileConfig.bio
-				)
-			}
+			{profileConfig.bio}
 		</div>
 
 		<div class="flex flex-wrap gap-2 justify-center mb-1">

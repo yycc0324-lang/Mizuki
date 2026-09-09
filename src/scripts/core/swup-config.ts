@@ -21,7 +21,6 @@ export const SWUP_SELECTORS = {
 		"#navbar-wrapper",
 		"#sidebar",
 		".music-player",
-		"#pio-container",
 	],
 
 	// Banner 相关
@@ -120,22 +119,6 @@ export interface PerformanceConfig {
 		layers: number; // 桌面端波浪层数
 		layersMobile: number; // 移动端波浪层数
 	};
-	// 樱花效果配置
-	sakuraEffect: {
-		enabled: boolean;
-		maxParticles: number; // 桌面端最大粒子数
-		maxParticlesMobile: number; // 移动端最大粒子数
-	};
-	// Live2D/Pio 配置
-	live2D: {
-		enabled: boolean;
-		hideOnMobile: boolean;
-	};
-	// 打字机效果
-	typewriter: {
-		enabled: boolean;
-		hideOnMobile: boolean;
-	};
 }
 
 export const PERFORMANCE_CONFIG: PerformanceConfig = {
@@ -143,19 +126,6 @@ export const PERFORMANCE_CONFIG: PerformanceConfig = {
 		enabled: true,
 		layers: 4,
 		layersMobile: 2,
-	},
-	sakuraEffect: {
-		enabled: true,
-		maxParticles: 60,
-		maxParticlesMobile: 25,
-	},
-	live2D: {
-		enabled: true,
-		hideOnMobile: true,
-	},
-	typewriter: {
-		enabled: true,
-		hideOnMobile: true,
 	},
 };
 

@@ -6,7 +6,6 @@
  */
 
 import Image from "@components/atoms/Image/Image.astro";
-import TypewriterText from "@components/atoms/typewriter-text/TypewriterText.astro";
 import { Icon } from "astro-icon/components";
 import { siteConfig } from "../../config";
 import { BANNER_HEIGHT_EXTEND } from "../../constants/constants";
@@ -26,7 +25,6 @@ interface Props {
 	showTextOverlay?: boolean;
 	overlayTitle?: string;
 	overlaySubtitle?: string | string[];
-	typewriter?: boolean;
 
 	// 水波纹效果
 	showWave?: boolean;
@@ -38,7 +36,6 @@ const {
 	showTextOverlay = false,
 	overlayTitle = siteConfig.banner.homeText?.title,
 	overlaySubtitle = siteConfig.banner.homeText?.subtitle,
-	typewriter = siteConfig.banner.homeText?.typewriter?.enable ?? false,
 	showWave = siteConfig.banner.waves?.enable ?? true,
 } = Astro.props;
 
@@ -622,18 +619,7 @@ const bannerFormats = getImageFormats();
 					{overlaySubtitle && (
 						<h2 class="banner-subtitle text-xl lg:text-3xl text-white/90 drop-shadow-md">
 							<span class="inline-block min-h-[1.2em]">
-								{typewriter && Array.isArray(overlaySubtitle) ? (
-									<TypewriterText
-										text={overlaySubtitle}
-										speed={siteConfig.banner.homeText?.typewriter?.speed}
-										deleteSpeed={siteConfig.banner.homeText?.typewriter?.deleteSpeed}
-										pauseTime={siteConfig.banner.homeText?.typewriter?.pauseTime}
-									/>
-								) : Array.isArray(overlaySubtitle) ? (
-									overlaySubtitle[0]
-								) : (
-									overlaySubtitle
-								)}
+								{Array.isArray(overlaySubtitle) ? overlaySubtitle[0] : overlaySubtitle}
 							</span>
 						</h2>
 					)}
@@ -680,21 +666,7 @@ const bannerFormats = getImageFormats();
 						class="opacity-50 fill-[var(--page-bg)]"
 						style="animation-delay: -3s; animation-duration: 10s; will-change: transform;"
 					></use>
-					<use
-						xlink:href="#gentle-wave"
-						x="48"
-						y="5"
-						class="opacity-75 fill-[var(--page-bg)]"
-						style="animation-delay: -4s; animation-duration: 13s; will-change: transform;"
-					></use>
-					<use
-						xlink:href="#gentle-wave"
-						x="48"
-						y="7"
-						class="fill-[var(--page-bg)]"
-						style="animation-delay: -5s; animation-duration: 20s; will-change: transform;"
-					></use>
-				</g>
+					</g>
 			</svg>
 		</div>
 	)}

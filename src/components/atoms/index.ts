@@ -8,4 +8,3 @@ export * from "./Image";
 export * from "./Link";
 export * from "./Loader";
 export * from "./tag-chip";
-export * from "./typewriter-text";

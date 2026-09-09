@@ -1,9 +1,8 @@
 ---
 import { PageProgressBar } from "@components/control/PageProgressBar";
-import Pio from "@components/features/pio/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
 import ConfigCarrier from "@components/misc/ConfigCarrier.astro";
 import MusicPlayer from "@components/widgets/music-player/MusicPlayer.svelte";
-import { pioConfig, profileConfig, siteConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 
 const BANNER_HEIGHT = 35;
 const BANNER_HEIGHT_EXTEND = 30;
@@ -241,11 +240,8 @@ if (siteConfig.font) {
 		<!-- Music Player - 核心始终加载（当enable=true），UI通过showFloatingPlayer控制 -->
 		<MusicPlayer client:idle />
 
-		<!-- Pio 看板娘组件 - 仅在进入视口时加载 -->
-		{pioConfig.enable && <Pio client:visible />}
-
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
-		<div id="page-height-extend" class="hidden h-[300vh]"></div>
+		<div id="page-height-extend" class="hidden h-[150vh] pointer-events-none"></div>
 	</body>
 </html>
 
