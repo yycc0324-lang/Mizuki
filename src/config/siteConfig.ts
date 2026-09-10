@@ -6,7 +6,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 export const siteConfig: SiteConfig = {
 	title: "YiCheng'S Blog",
 	subtitle: "Yicheng's personal blog",
-	siteURL: "https://mizuki.mysqil.com/", // 部署时再改成你的域名，本地开发不需要改
+	siteURL: "https://cnyicheng.top/", // 部署时再改成你的域名，本地开发不需要改
 	siteStartDate: "2025-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
 
 	lang: SITE_LANG,
