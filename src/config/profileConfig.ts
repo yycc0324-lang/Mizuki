@@ -4,7 +4,7 @@ import type { ProfileConfig } from "../types/config";
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
 	name: "伊橙",
-	bio: "诸事顺利",
+	bio: "诸事顺，利",
 	links: [
 		{
 			name: "Bilibili",
