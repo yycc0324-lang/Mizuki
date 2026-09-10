@@ -9,6 +9,7 @@
 - [Vercel 部署](#-vercel-部署)
 - [Netlify 部署](#-netlify-部署)
 - [Cloudflare Pages 部署](#-cloudflare-pages-部署)
+- [宝塔面板 / 自建服务器部署](#-宝塔面板--自建服务器部署)
 - [故障排查](#-故障排查)
 
 ---
@@ -292,6 +293,36 @@ USE_SUBMODULE=false  # ⚠️ Cloudflare Pages 默认不支持 submodule
 - ✅ 统一的构建命令，无需修改配置
 - ✅ 自动兼容所有部署模式
 - ✅ 同步失败不影响构建（回退到本地内容）
+
+---
+
+## 🏠 宝塔面板 / 自建服务器部署
+
+本项目是纯静态站点（`output: "static"`），**不需要常驻 Node 进程，也没有启动项**，
+用 Nginx 直接托管构建产物 `dist/` 即可。
+
+### 快速流程
+
+1. 服务器安装 Node ≥ 22 与 pnpm（宝塔「软件商店 → Node.js 版本管理器」）；
+2. 拉取代码后执行 `pnpm install` → `pnpm build`，产物在 `dist/`；
+3. 宝塔「网站 → 添加站点」：域名填自己的域名，**PHP 版本选「纯静态」**；
+4. 「站点 → 设置 → 网站目录」：网站目录填 `dist`（或独立发布目录），**运行目录保持 `/`**；
+5. 「设置 → 配置文件」合并 `docs/nginx/baota.conf` 的内容
+   （其中 `try_files` 用于适配本项目的 `trailingSlash: "always"`）；
+6. 域名添加 `@` 与 `www` 两条 A 记录，解析生效后申请 Let's Encrypt 证书并开启强制 HTTPS。
+
+### 一键构建 + 发布
+
+```bash
+cd /www/wwwroot/mizuki
+bash scripts/deploy-baota.sh
+```
+
+脚本会自动探测宝塔的 Node 路径、安装依赖、构建（失败自动回退）、
+同步到网站目录，并在 root 身份下修正属主为 `www:www`。
+
+> 📖 完整步骤、「网站目录 / 运行目录」填写对照表与故障排查，
+> 见 **[宝塔面板部署指南](./DEPLOYMENT_BAOTA.md)**。
 
 ---
 

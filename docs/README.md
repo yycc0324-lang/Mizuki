@@ -46,6 +46,12 @@
   - 私有仓库认证
   - 故障排查
 
+- **[DEPLOYMENT_BAOTA.md](./DEPLOYMENT_BAOTA.md)** - 宝塔面板部署指南（自建服务器 / VPS）🆕
+  - Nginx 静态托管 dist（无需启动项）
+  - 「网站目录 / 运行目录」填写说明
+  - 域名解析、HTTPS、伪静态配置
+  - 一键构建发布脚本与故障排查
+
 - **[AUTO_BUILD_TRIGGER.md](./AUTO_BUILD_TRIGGER.md)** - 自动构建触发快速参考 🆕
   - 5 步快速配置，解决内容更新不触发部署的问题
 
@@ -66,6 +72,9 @@
 ### 我想配置私有内容仓库
 → 阅读 [内容分离指南 - 私有仓库配置](./CONTENT_SEPARATION.md#-私有仓库配置)
 
+### 我想部署到自己的服务器（宝塔面板 / VPS）
+→ 阅读 [宝塔面板部署指南](./DEPLOYMENT_BAOTA.md)
+
 ### 我的部署遇到问题
 → 阅读 [部署指南 - 故障排查](./DEPLOYMENT.md#-故障排查)
 
@@ -84,7 +93,9 @@ docs/
 ├── CONTENT_REPOSITORY.md        # 内容仓库结构
 ├── MIGRATION_GUIDE.md           # 迁移指南
 ├── DEPLOYMENT.md                # 部署完整指南
+├── DEPLOYMENT_BAOTA.md          # 宝塔面板部署指南
 ├── AUTO_BUILD_TRIGGER.md        # 自动构建触发快速参考
+├── nginx/                       # Nginx 配置片段（宝塔等自建服务器）
 └── image/                       # 文档图片资源
 ```
 

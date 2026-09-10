@@ -150,10 +150,11 @@
 - **Netlify：** 直接从 GitHub 部署
 - **GitHub Pages：** 使用包含的 GitHub Actions 工作流
 - **Cloudflare Pages：** 连接您的仓库
+- **宝塔面板 / 自建服务器：** 用 Nginx 静态托管构建产物 `dist`（详见 [宝塔部署指南](./docs/DEPLOYMENT_BAOTA.md)）
 
 - **环境变量配置（可选）：** 可参照 `.env.example` 来配置
 
-部署前，请在 `src/config.ts` 中更新 `siteURL`。
+部署前，请在 `src/config/siteConfig.ts` 中更新 `siteURL`。
 **不建议**将 `.env` 文件提交到 Git，`.env` 应该仅在本地调试或构建使用。若要将项目在云平台部署，建议通过平台上的 `环境变量` 配置传入。
 
 ## 📝 文章前言格式
