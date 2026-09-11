@@ -46,6 +46,18 @@ const normalizeToArray = (images: string | string[]): string[] =>
 const desktopImages = normalizeToArray(bannerImages.desktop).filter(Boolean);
 const mobileImages = normalizeToArray(bannerImages.mobile).filter(Boolean);
 
+/**
+ * 本地（同源）横幅图加 crossorigin="anonymous"
+ *
+ * 原因（实测）：雨层用 THREE 纹理加载横幅图时是 CORS 模式请求，而轮播 <img> 默认是 no-cors；
+ * 浏览器把这两种模式分成两份 HTTP 缓存 → 轮播每换一帧，雨层都会把同一张图完整重下一次
+ * （实测 3.webp 895KB 下了两遍，一个 12 秒轮播周期白下约 1.8MB）。
+ * 统一成 CORS 模式即可共用缓存；同源图片加 crossorigin 不影响显示。
+ */
+const crossOriginOf = (src: string) => (src.startsWith("/") ? "anonymous" : undefined);
+
+// 雨层位于横幅之内、水波纹之下（z-1 < z-5）→ 两者可同时显示
+// 雨窗是否开启、以及与壁纸模式的联动，见 src/components/common/RainyDay.astro
 const isCarouselEnabled =
 	siteConfig.banner.carousel?.enable &&
 	(desktopImages.length > 1 || mobileImages.length > 1);
@@ -100,6 +112,7 @@ const bannerFormats = getImageFormats();
 						sizes="100vw"
 						loading="eager"
 						fetchpriority="high"
+						crossorigin={crossOriginOf(mobileImages[0])}
 						quality={bannerMobileQuality}
 						formats={bannerFormats}
 					/>
@@ -116,6 +129,7 @@ const bannerFormats = getImageFormats();
 						sizes="100vw"
 						loading="eager"
 						fetchpriority="high"
+						crossorigin={crossOriginOf(src)}
 						quality={bannerMobileQuality}
 						formats={bannerFormats}
 					/>
@@ -135,6 +149,7 @@ const bannerFormats = getImageFormats();
 						sizes="100vw"
 						loading="eager"
 						fetchpriority="high"
+						crossorigin={crossOriginOf(desktopImages[0])}
 						quality={bannerQuality}
 						formats={bannerFormats}
 					/>
@@ -151,6 +166,7 @@ const bannerFormats = getImageFormats();
 						sizes="100vw"
 						loading="eager"
 						fetchpriority="high"
+						crossorigin={crossOriginOf(src)}
 						quality={bannerQuality}
 						formats={bannerFormats}
 					/>
@@ -203,6 +219,10 @@ const bannerFormats = getImageFormats();
 						mobileImg.className =
 							"block md:hidden object-cover h-full w-full transition duration-700 opacity-100";
 						mobileImg.src = mobileSrc;
+						// 与雨层的 CORS 纹理请求共用缓存（同源才加）
+						if (String(mobileSrc).startsWith("/")) {
+							mobileImg.crossOrigin = "anonymous";
+						}
 						mobileImg.loading = "eager";
 						mobileImg.fetchPriority = "high";
 						mobileImg.dataset.position = position;
@@ -216,6 +236,9 @@ const bannerFormats = getImageFormats();
 						desktopImg.className =
 							"hidden md:block object-cover h-full w-full transition duration-700 opacity-100";
 						desktopImg.src = desktopSrc;
+						if (String(desktopSrc).startsWith("/")) {
+							desktopImg.crossOrigin = "anonymous";
+						}
 						desktopImg.loading = "eager";
 						desktopImg.fetchPriority = "high";
 						desktopImg.dataset.position = position;

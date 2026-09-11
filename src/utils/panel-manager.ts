@@ -7,6 +7,7 @@ type PanelId =
 	| "mobile-toc-panel"
 	| "display-setting"
 	| "nav-menu-panel"
+	| "rainy-panel"
 	| "search-panel"
 	| "wallpaper-mode-panel";
 

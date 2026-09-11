@@ -362,4 +362,13 @@ export const en: Translation = {
 	[Key.randomPosts]: "Random Posts",
 	[Key.smartRecommend]: "Smart",
 	[Key.randomRecommend]: "Random",
+
+	// Rain effect switch panel
+	[Key.rainySwitch]: "Rain effect",
+	[Key.rainyBannerMode]: "Banner mode",
+	[Key.rainyFullscreenMode]: "Fullscreen wallpaper",
+	[Key.rainyOff]: "Off",
+	[Key.rainyBannerOnly]: "Banner only",
+	[Key.rainyFullscreen]: "Fullscreen",
+	[Key.rainyOn]: "On",
 };

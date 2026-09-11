@@ -63,3 +63,9 @@ src/data/bilibili-data.json
 # QQ 音乐 / 网易云 登录 Cookie（自建 Meting 用，切勿提交到 Git）
 qq-cookie.txt
 
+# 图片重压脚本（scripts/optimize-images.mjs）的原图备份
+.image-backup/
+
+# 首屏测量结果（scripts/measure-first-load.py）
+reports/
+

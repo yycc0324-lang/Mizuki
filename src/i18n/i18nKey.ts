@@ -341,6 +341,15 @@ enum I18nKey {
 	randomPosts = "randomPosts",
 	smartRecommend = "smartRecommend",
 	randomRecommend = "randomRecommend",
+
+	// 雨滴特效开关面板
+	rainySwitch = "rainySwitch",
+	rainyBannerMode = "rainyBannerMode",
+	rainyFullscreenMode = "rainyFullscreenMode",
+	rainyOff = "rainyOff",
+	rainyBannerOnly = "rainyBannerOnly",
+	rainyFullscreen = "rainyFullscreen",
+	rainyOn = "rainyOn",
 }
 
 export default I18nKey;

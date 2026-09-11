@@ -351,4 +351,13 @@ export const zh_TW: Translation = {
 	[Key.randomPosts]: "隨機文章",
 	[Key.smartRecommend]: "智能推薦",
 	[Key.randomRecommend]: "隨機推薦",
+
+	// 雨滴特效開關面板
+	[Key.rainySwitch]: "雨滴特效",
+	[Key.rainyBannerMode]: "橫幅模式",
+	[Key.rainyFullscreenMode]: "全屏壁紙",
+	[Key.rainyOff]: "無雨",
+	[Key.rainyBannerOnly]: "僅橫幅",
+	[Key.rainyFullscreen]: "全屏",
+	[Key.rainyOn]: "有雨",
 };

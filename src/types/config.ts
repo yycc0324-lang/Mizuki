@@ -465,3 +465,48 @@ export interface ThirdPartyAnalyticsConfig {
 	enable: boolean; // 是否启用第三方统计（Microsoft Clarity），默认关闭
 	clarityId?: string; // Clarity 项目 ID
 }
+
+/**
+ * 横幅「雨滴窗口」特效配置
+ * 基于 @arayui/rainy-day（Three.js + WebGL），效果叠加在首页横幅上
+ */
+export interface RainyDayConfig {
+	enable: boolean; // 总开关：false 时不挂载雨窗
+	/** 横幅壁纸模式下雨的默认档位（用户可在导航栏面板里覆盖） */
+	defaultInBannerMode: "off" | "banner" | "fullscreen";
+	/** 全屏壁纸模式下雨的默认档位（用户可在导航栏面板里覆盖） */
+	defaultInFullscreenMode: "off" | "on";
+	/** 是否在导航栏显示「雨滴」按钮（面板里可切换上面两个档位） */
+	showSwitch: boolean;
+	/** 轮播换图时雨层淡出→换图→淡入的时长（毫秒；0 = 直接切换） */
+	bgFadeMs: number;
+	/** 延后挂载：等 load + 浏览器空闲后再初始化（把 117KB gzip 的 Three.js 移出首屏关键路径） */
+	lazyMount: boolean;
+	/** lazyMount 的 idle 兜底超时（毫秒）：最迟这么久一定挂载，避免雨永远不出现 */
+	idleDelayMs: number;
+	/** 雨层挂载完成后的淡入时长（毫秒；0 = 立即显示） */
+	fadeInMs: number;
+	/** 弱网/省流（navigator.connection.saveData 或 2G）不加载雨特效 */
+	skipOnSlowNetwork: boolean;
+
+	// ↓ 以下参数直接透传给 RainyWindow，含义见官方文档
+	intensity: number; // 雨滴密度 0-1
+	speed: number; // 下落速度 0-10
+	brightness: number; // 亮度 0-1
+	normal: number; // 法线强度 0-3
+	zoom: number; // 缩放 0.1-3
+	blurIntensity: number; // 玻璃模糊强度 0-10（太大会影响文字可读性）
+	blurIterations?: number; // 模糊迭代次数 1-64（越大越慢）
+	lightning: boolean; // 闪电效果
+	panning: boolean; // 平移（镜头晃动）
+	postProcessing: boolean; // 后处理（开启更细腻，稍耗性能）
+	fps: number; // 限帧 15-120（省电关键）
+
+	// ↓ 行为开关
+	disableOnMobile: boolean; // 移动端不启用（省电）
+	respectReducedMotion: boolean; // 尊重系统「减少动态效果」设置
+	autoDisableWaves: boolean; // 雨窗开启时自动关闭横幅水波纹
+	pauseWhenHidden: boolean; // 标签页不可见时暂停渲染
+	lazy: boolean; // 动态 import 懒加载（Three.js 不进首屏）
+	debug: boolean; // 是否把实例与控制台调参接口挂到 window（调完可关掉）
+}

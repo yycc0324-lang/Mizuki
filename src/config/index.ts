@@ -37,6 +37,7 @@ export { navBarConfig } from "./navBarConfig";
 export { permalinkConfig } from "./permalinkConfig";
 export { profileConfig } from "./profileConfig";
 export { randomPostsConfig } from "./randomPostsConfig";
+export { rainyDayConfig } from "./rainyDayConfig";
 export { relatedPostsConfig } from "./relatedPostsConfig";
 export { shareConfig } from "./shareConfig";
 export { sidebarLayoutConfig } from "./sidebarConfig";

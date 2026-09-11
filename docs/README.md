@@ -93,6 +93,20 @@
 ### 我想让博客音乐播放器更稳定 / 播放 QQ 音乐 VIP 曲目 🆕
 → 阅读 [自建 Meting 音乐接口指南](./DEPLOYMENT_METING.md)
 
+### 我想优化首屏加载 / 压缩图片 🆕
+- 量首屏传输量（图片/JS/CSS 字节、LCP、雨特效何时加载）：
+  ```bash
+  pnpm build
+  python3 scripts/measure-first-load.py --dist dist --tag before
+  ```
+  结果写入 `reports/first-load-<tag>.json`（需要本机装 Playwright + Chrome）
+- 图片重压（横幅/相册/封面/头像/logo，保持文件名不变，原图备份到 `.image-backup/`）：
+  ```bash
+  node scripts/optimize-images.mjs --dry-run   # 先看能省多少
+  node scripts/optimize-images.mjs             # 执行
+  ```
+  默认规则：桌面横幅 ≤2560、移动横幅 ≤1000、相册/封面 ≤1600、头像 ≤512、PNG 走调色板量化
+
 ## 📖 文档架构
 
 ```

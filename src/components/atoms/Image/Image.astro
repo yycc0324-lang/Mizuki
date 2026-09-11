@@ -20,6 +20,12 @@ interface Props {
 	basePath?: string;
 	loading?: "eager" | "lazy";
 	fetchpriority?: "high" | "low" | "auto";
+	/**
+	 * 同源图片传 "anonymous" 时，请求会走 CORS 模式 —— 与雨层的 THREE 纹理加载
+	 * （crossOrigin=anonymous）保持一致，从而共用 HTTP 缓存。
+	 * 否则浏览器把 CORS / no-cors 分成两份缓存，轮播每次换帧雨层都要重新完整下载同一张图。
+	 */
+	crossorigin?: "anonymous" | "use-credentials" | "";
 	// 响应式图像属性
 	layout?: ResponsiveImageLayout;
 	usePicture?: boolean;
@@ -37,6 +43,7 @@ const {
 	basePath = "/",
 	loading = "lazy",
 	fetchpriority,
+	crossorigin,
 	layout = "constrained",
 	usePicture = true,
 	formats = getImageFormats(),
@@ -107,6 +114,7 @@ const responsiveProps = {
 				style={imageStyle}
 				loading={loading}
 				fetchpriority={fetchpriority}
+				crossorigin={crossorigin}
 				formats={formats}
 				fallbackFormat={fallbackFormat}
 				{...responsiveProps}
@@ -122,6 +130,7 @@ const responsiveProps = {
 				style={imageStyle}
 				loading={loading}
 				fetchpriority={fetchpriority}
+				crossorigin={crossorigin}
 				{...responsiveProps}
 			/>
 		)
@@ -137,6 +146,7 @@ const responsiveProps = {
 				referrerpolicy={referrerPolicy}
 				decoding="async"
 				fetchpriority={fetchpriority}
+				crossorigin={crossorigin}
 			/>
 		)
 	}

@@ -365,4 +365,13 @@ export const ja: Translation = {
 	[Key.randomPosts]: "ランダムな投稿",
 	[Key.smartRecommend]: "スマート",
 	[Key.randomRecommend]: "ランダム",
+
+	// 雨エフェクト切替パネル
+	[Key.rainySwitch]: "雨エフェクト",
+	[Key.rainyBannerMode]: "バナー表示",
+	[Key.rainyFullscreenMode]: "全画面壁紙",
+	[Key.rainyOff]: "なし",
+	[Key.rainyBannerOnly]: "バナーのみ",
+	[Key.rainyFullscreen]: "全画面",
+	[Key.rainyOn]: "あり",
 };

@@ -5,8 +5,13 @@ import {
 	// WALLPAPER_BANNER,
 } from "@constants/constants";
 
-import { siteConfig } from "@/config";
+import { rainyDayConfig, siteConfig } from "@/config";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
+import type {
+	RainyBannerMode,
+	RainyFullscreenMode,
+	RainyPrefs,
+} from "./rainy-day-options";
 
 export function getDefaultHue(): number {
 	const fallback = "250";
@@ -157,5 +162,31 @@ export function setWallpaperMode(mode: WALLPAPER_MODE): void {
 	// 触发自定义事件通知其他组件壁纸模式已改变
 	window.dispatchEvent(
 		new CustomEvent("wallpaper-mode-change", { detail: { mode } }),
+	);
+}
+
+// ────────────────────────────────────────────────────────────
+// 雨滴特效偏好（导航栏「雨滴」按钮的面板里可切换；RainyDay 会监听事件即时生效）
+// ────────────────────────────────────────────────────────────
+
+export function getStoredRainyPrefs(): RainyPrefs {
+	const banner = localStorage.getItem("rainyInBanner") as RainyBannerMode | null;
+	const fullscreen = localStorage.getItem(
+		"rainyInFullscreen",
+	) as RainyFullscreenMode | null;
+	return {
+		banner: banner ?? rainyDayConfig.defaultInBannerMode,
+		fullscreen: fullscreen ?? rainyDayConfig.defaultInFullscreenMode,
+	};
+}
+
+export function setRainyPrefs(patch: Partial<RainyPrefs>): void {
+	if (patch.banner) localStorage.setItem("rainyInBanner", patch.banner);
+	if (patch.fullscreen) {
+		localStorage.setItem("rainyInFullscreen", patch.fullscreen);
+	}
+	// 通知 RainyDay 即时切换（无需刷新页面）
+	window.dispatchEvent(
+		new CustomEvent("rainy-prefs-change", { detail: getStoredRainyPrefs() }),
 	);
 }

@@ -25,6 +25,7 @@
 		"compress-fonts": "node scripts/compress-fonts/index.js"
 	},
 	"dependencies": {
+		"@arayui/rainy-day": "^1.0.6",
 		"@astrojs/check": "^0.9.9",
 		"@astrojs/mdx": "^5.0.6",
 		"@astrojs/rss": "^4.0.18",

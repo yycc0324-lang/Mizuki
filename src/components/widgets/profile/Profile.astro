@@ -27,8 +27,9 @@ import Image from "../../atoms/Image/Image.astro";
 			src={profileConfig.avatar || ""}
 			alt="Profile Image of the Author"
 			class="mx-auto lg:w-full h-full lg:mt-0"
-			loading="eager"
-			fetchpriority="high"
+			loading="lazy"
+			widths={[128, 192, 256, 384, 512]}
+			sizes="(min-width: 1024px) 16rem, 12rem"
 		/>
 	</a>
 	<div class="px-2">
