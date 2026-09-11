@@ -40,6 +40,12 @@
 
 ### 部署相关
 
+- **[DEPLOYMENT_FOR_AI.md](./DEPLOYMENT_FOR_AI.md)** - 🆕 **服务器部署总纲（给 AI / 运维执行）** ⭐
+  - 一份文档自包含：环境事实、决策表、静态站部署、**Docker 自建音乐接口全套文件**
+  - 每步都有命令 + 验收标准 + 统一自查清单 + 故障排查总表
+  - 含最近一轮性能优化（图片重压 / 岛屿修正 / 雨特效延后 / **CDN 必须配 CORS**）对部署的影响
+  - 「赶时间就看这一段」：最小可执行路径
+
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 部署完整指南 ⭐
   - 各平台部署配置 (GitHub Pages / Vercel / Netlify / Cloudflare Pages)
   - 内容仓库更新自动触发构建
@@ -77,6 +83,9 @@
 
 ### 我想配置私有内容仓库
 → 阅读 [内容分离指南 - 私有仓库配置](./CONTENT_SEPARATION.md#-私有仓库配置)
+
+### 我想让服务器上的 AI / 运维把整站部署好 🆕
+→ 把 [服务器部署总纲（给 AI 执行）](./DEPLOYMENT_FOR_AI.md) 整份交给它（含 Docker 音乐接口全套内容与验收清单）
 
 ### 我想部署到自己的服务器（宝塔面板 / VPS）
 → 阅读 [宝塔面板部署指南](./DEPLOYMENT_BAOTA.md)
