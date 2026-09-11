@@ -69,7 +69,7 @@ import { LinkPreset } from "../types/config";
  *     icon: "material-symbols:more-horiz",
  *     children: [
  *       LinkPreset.Projects,                                    // 使用预设
- *       { name: "Skills", url: "/skills/", icon: "material-symbols:psychology" }, // 自定义
+ *       { name: "Timeline", url: "/timeline/", icon: "material-symbols:timeline" }, // 自定义
  *     ]
  *   }
  *
@@ -219,11 +219,6 @@ export const navBarConfig: NavBarConfig = {
 					name: "Projects",
 					url: "/projects/",
 					icon: "material-symbols:work",
-				},
-				{
-					name: "Skills",
-					url: "/skills/",
-					icon: "material-symbols:psychology",
 				},
 				// {
 				// 	name: "Timeline",

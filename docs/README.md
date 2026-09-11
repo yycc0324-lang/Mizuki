@@ -55,6 +55,12 @@
 - **[AUTO_BUILD_TRIGGER.md](./AUTO_BUILD_TRIGGER.md)** - 自动构建触发快速参考 🆕
   - 5 步快速配置，解决内容更新不触发部署的问题
 
+- **[DEPLOYMENT_METING.md](./DEPLOYMENT_METING.md)** - 自建 Meting 音乐接口指南 🆕
+  - 为什么需要自建（公共实例只会播免费曲目）
+  - Docker + Nginx 反代 / 宝塔 PHP 站点 / 子路径反代 三条路径与适配度对比
+  - QQ 音乐 VIP Cookie 配置与安全提醒
+  - 验证清单、故障排查与回滚
+
 ## 🚀 快速查找
 
 ### 我是新手，想快速开始
@@ -84,6 +90,9 @@
 ### 内容仓库更新后站点没有自动重新部署 🆕
 → 阅读 [自动构建触发快速参考](./AUTO_BUILD_TRIGGER.md)
 
+### 我想让博客音乐播放器更稳定 / 播放 QQ 音乐 VIP 曲目 🆕
+→ 阅读 [自建 Meting 音乐接口指南](./DEPLOYMENT_METING.md)
+
 ## 📖 文档架构
 
 ```
@@ -94,8 +103,10 @@ docs/
 ├── MIGRATION_GUIDE.md           # 迁移指南
 ├── DEPLOYMENT.md                # 部署完整指南
 ├── DEPLOYMENT_BAOTA.md          # 宝塔面板部署指南
+├── DEPLOYMENT_METING.md         # 自建 Meting 音乐接口指南
 ├── AUTO_BUILD_TRIGGER.md        # 自动构建触发快速参考
 ├── nginx/                       # Nginx 配置片段（宝塔等自建服务器）
+├── meting/                      # 自建 Meting 服务部署文件（Dockerfile / compose / 反代）
 └── image/                       # 文档图片资源
 ```
 

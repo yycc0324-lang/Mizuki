@@ -59,3 +59,7 @@ src/data/bilibili-data.json
 *.psd~
 *.cmo3
 *.vtube.json
+
+# QQ 音乐 / 网易云 登录 Cookie（自建 Meting 用，切勿提交到 Git）
+qq-cookie.txt
+

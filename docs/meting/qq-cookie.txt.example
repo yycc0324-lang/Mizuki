@@ -1,0 +1,18 @@
+# ============================================================
+# QQ 音乐 Cookie 示例文件（自建 Meting 用）
+# ------------------------------------------------------------
+# 用法：
+#   1) 复制本文件为 qq-cookie.txt，去掉本段注释，只保留一行 Cookie：
+#        cp docs/meting/qq-cookie.txt.example /www/wwwroot/meting/qq-cookie.txt
+#   2) 填写浏览器 y.qq.com（已登录绿钻/VIP 账号）→ F12 → Application
+#      → Cookies → https://y.qq.com 里找到 uin / qm_keyst / qqmusic_key
+#   3) 重跑部署脚本：bash scripts/deploy-meting.sh
+#      （脚本会自动把它注入 index.php；内容没变则跳过，变了则整段替换）
+#
+# ⚠ 安全提醒：
+#   - 该文件等于账号登录凭证，已被 .gitignore 忽略，请勿提交到 Git / 发给他人
+#   - 建议使用独立小号开通会员，避免影响主力账号
+#   - Cookie 通常几个月后过期；失效后重新复制一次即可
+#
+# 只要一行，分号分隔，例如（下面只是格式示例，不是真实值）：
+uin=o0123456789; qm_keyst=Q_H_L_xxxxxxxxxxxxxxxx; qqmusic_key=Q_H_L_xxxxxxxxxxxxxxxx

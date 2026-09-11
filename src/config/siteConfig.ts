@@ -22,7 +22,7 @@ export const siteConfig: SiteConfig = {
 		diary: true, // 日记页面开关
 		friends: true, // 友链页面开关
 		projects: true, // 项目页面开关
-		skills: true, // 技能页面开关
+		skills: false, // 技能页面开关（技能展示板块已移除，保留开关便于日后恢复）
 		timeline: true, // 时间线页面开关
 		albums: true, // 相册页面开关
 		devices: true, // 设备页面开关
@@ -34,8 +34,8 @@ export const siteConfig: SiteConfig = {
 		mode: "text-icon",
 		// 顶栏标题文本
 		text: "yycc0324-lang",
-		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
-		icon: "assets/home/home.webp",
+		// 顶栏标题图标路径（留空则不显示图标，仅显示文本）
+		icon: "",
 		// 网站Logo图片路径
 		logo: "assets/home/default-logo.webp",
 	},
