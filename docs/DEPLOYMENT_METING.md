@@ -371,8 +371,8 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 - 接口返回的字段名 `name|title`、`artist|author` 前端都做了兜底兼容；
 - 接口不返回 `duration`，前端会在音频加载完成时自动读取真实时长。
 
-改用在线模式后，本地那 4 首（`public/assets/music/url/*.mp3`，共 21MB）就不再被读取，
-如果不需要"断网兜底"，可以删除以缩小部署包体积（`dist-baota.zip` 已 66MB）。
+改用在线模式后，本地那 4 首（`public/assets/music/**`，共 21MB）及其硬编码歌单条目**已删除**（`LOCAL_PLAYLIST` 已清空）。
+若日后要回退到本地模式，把音频放回 `public/assets/music/url/`、封面放回 `public/assets/music/cover/`，再按 `Song` 结构补回条目即可。
 
 ---
 

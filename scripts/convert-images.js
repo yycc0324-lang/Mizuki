@@ -17,7 +17,6 @@ const targets = [
 	"images/albums/**/*.jpeg",
 	"images/diary/*.jpg",
 	"images/device/*.png",
-	"assets/music/cover/*.jpg",
 ];
 
 async function convertToWebP(inputPath, quality = 85) {
