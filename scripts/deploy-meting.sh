@@ -49,9 +49,13 @@ ENABLE_AUTH="${ENABLE_AUTH:-false}"     # 接口签名校验（只作用于 url/
 AUTH_SECRET="${AUTH_SECRET:-}"          # ENABLE_AUTH=true 时必填
 # ------------------------------------------------------------------
 
-# 本地联调便利：若默认部署目录不存在、而 ~/meting-local 存在，则自动使用后者
-if [ ! -d "$DEPLOY_DIR" ] && [ -d "$HOME/meting-local" ]; then
+# 部署目录解析（兼容两类环境，避免新机器第一次跑就失败）：
+#   服务器：/www/wwwroot/meting —— root/www 用户可直接创建
+#   本地开发机：/www 通常只读（mkdir 会报 Read-only file system），创建失败则回退到 ~/meting-local
+# 注意：这里不能调用 warn()（助手函数在下方才定义），故直接用 echo 输出提示
+if [ ! -d "$DEPLOY_DIR" ] && ! mkdir -p "$DEPLOY_DIR" 2>/dev/null; then
 	DEPLOY_DIR="$HOME/meting-local"
+	echo "⚠ 默认部署目录不可用，已回退到 ${DEPLOY_DIR}（本机开发模式）"
 fi
 
 ACTION="${1:-up}"
@@ -387,7 +391,7 @@ case "$ACTION" in
 		log "已停止 meting 服务（重新启动：bash scripts/deploy-meting.sh）"
 		;;
 	*)
-		die "未知参数：$ACTION（可用：up / test / restart / logs / down）"
+		die "未知参数：${ACTION}（可用：up / test / refresh / restart / logs / down）"
 		;;
 esac
 

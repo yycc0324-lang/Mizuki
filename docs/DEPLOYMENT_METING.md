@@ -16,6 +16,7 @@
 - [九、回滚](#九回滚)
 - [十、附：路径 A（宝塔 PHP 站点，不用 Docker）](#十附路径-a宝塔-php-站点不用-docker)
 - [十一、附：路径 B（现有站点子路径反代）](#十一附路径-b现有站点子路径反代)
+- [十二、附：换一台电脑从零部署](#十二附换一台电脑从零部署)
 
 ---
 
@@ -469,4 +470,107 @@ meting_api: "https://cnyicheng.top/meting/?server=:server&type=:type&id=:id&r=:r
 > 1. `proxy_pass` 结尾的斜杠决定了 `/meting/` 前缀是否被剥离，写错会 404；
 > 2. 主站静态缓存规则里若对 `location /` 做了 `try_files`，要确保 `/meting/` 这段 location 优先级正确（本片段是前缀匹配，放在 `location /` 之前即可）。
 > 该方案把动态接口混进了静态站，缓存与安全头更容易互相干扰，故排在最后。
+
+---
+
+## 十二、附：换一台电脑从零部署
+
+> 场景：换了一台电脑（或换了一台服务器），想**只靠仓库里的文件**把音乐服务重新跑起来。
+
+### 1. 仓库里有什么 / 没有什么
+
+| ✅ 已在仓库（`git clone` 即有） | ⚠️ 不在仓库（需自己准备） |
+|---|---|
+| `docs/meting/Dockerfile`、`docker-compose.yml`、`nginx-meting.conf` | **Docker 镜像源配置**（属机器级设置，见 2.1） |
+| `scripts/deploy-meting.sh`、`scripts/update-meting-cookie.sh` | **QQ Cookie**（`qq-cookie.txt` 已被 `.gitignore` 忽略） |
+| `docs/DEPLOYMENT_METING.md`（本文） | meting-api 源码 —— 由脚本自动下载，**无需手工准备** |
+
+### 2. 前置条件自检
+
+| 条件 | 检查命令 | 不满足时怎么办 |
+|---|---|---|
+| Docker + compose v2 | `docker version && docker compose version` | 装 Docker Desktop，或 `apt install docker-compose-plugin` |
+| 能拉取 `php:8.2-apache` | `docker pull php:8.2-apache` | 配镜像源（见 2.1）后重启 Docker |
+| 能访问 `codeload.github.com` | `curl -sI https://codeload.github.com \| head -1` | 手动下载 release 解压为 `$DEPLOY_DIR/meting-api/` |
+| 8899 端口空闲（可改） | macOS：`lsof -i:8899`；Linux：`ss -ltnp \| grep 8899` | 用 `METING_PORT=xxxx` 覆盖 |
+
+#### 2.1 配置 Docker 镜像源（国内常见，一次性）
+
+编辑 `~/.docker/daemon.json`：
+
+```json
+{
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "https://docker.1ms.run"
+  ]
+}
+```
+
+改完**重启 Docker**（Docker Desktop 重启 / `sudo systemctl restart docker`），
+再用 `docker info --format '{{.RegistryConfig.Mirrors}}'` 确认已生效。
+
+### 3. 三条命令跑起来
+
+```bash
+git clone <你的仓库> && cd Mizuki
+
+# ① 本地 / 开发机（http + 回环地址；部署目录会自动回退到 ~/meting-local）
+PUBLIC_SCHEME=http PUBLIC_DOMAIN=127.0.0.1:8899 bash scripts/deploy-meting.sh
+
+# ② 服务器（域名 + https；默认部署目录 /www/wwwroot/meting）
+PUBLIC_DOMAIN=meting.你的域名 bash scripts/deploy-meting.sh
+
+# ③ 补上 QQ Cookie 之后（VIP 曲目必需）
+bash scripts/deploy-meting.sh restart && bash scripts/deploy-meting.sh test
+```
+
+> 脚本会自动完成：拉取源码 → 改写 `index.php`（API_URI / 缓存 / Cookie 读取）→ 构建镜像 → 启动容器 → `php -l` 自检 → 逐首探测音频地址。
+
+### 4. 把 QQ Cookie 带到新机器
+
+`qq-cookie.txt` 被 `.gitignore` 忽略，**不会随仓库走**。两种方式：
+
+1. **重新导出（推荐）**：新机器浏览器登录 y.qq.com → DevTools → Network → 任意请求的 `cookie` → 执行
+   ```bash
+   bash scripts/update-meting-cookie.sh
+   ```
+2. **手工拷贝**：把旧机器的 `~/meting-local/qq-cookie.txt` 复制到新机器同一路径，并 `chmod 600`
+
+> ⚠️ 不要提交进 Git、不要贴到聊天或截图里（它等于账号登录态）。
+
+### 5. 拉不到 Docker Hub？直接把镜像搬过去
+
+```bash
+# 有镜像的机器
+docker save mizuki-meting:latest | gzip > mizuki-meting.tar.gz
+
+# 新机器
+docker load < mizuki-meting.tar.gz
+```
+
+想直接用导入的镜像（不重新构建），二选一：
+
+- 把 `docker-compose.yml` 里的 `build: .` 注释掉（保留 `image: mizuki-meting:latest`）
+- 或不用 compose，直接跑：
+
+```bash
+docker run -d --name meting -p 127.0.0.1:8899:80 \
+  -v "$PWD/meting-api/cache:/var/www/html/cache" \
+  -v "$PWD/qq-cookie.txt:/var/www/html/qq-cookie.txt:ro" \
+  --restart unless-stopped mizuki-meting:latest
+```
+
+> 注意：**镜像里不含 Cookie**（它是运行时挂载的文件），所以 4 的步骤仍要做。
+
+### 6. 常见报错对照
+
+| 报错 | 原因与处理 |
+|---|---|
+| 构建时 `failed to fetch oauth token ... i/o timeout` | 拉不到基础镜像 → 按 2.1 配镜像源并重启 Docker |
+| `mkdir: /www: Read-only file system` | 在非服务器环境用了默认目录 → 现在脚本会自动回退 `~/meting-local`；也可显式指定 `DEPLOY_DIR=...` |
+| `✘ 源码获取失败（tarball 与 git 都不通）` | 网络到 GitHub 不通 → 手动把 [meting-api](https://github.com/injahow/meting-api) 源码放到 `$DEPLOY_DIR/meting-api/` |
+| 歌单能出来但点了没声音 | `API_URI` 与实际访问地址不一致 → 确认 `PUBLIC_SCHEME` / `PUBLIC_DOMAIN` 传对了 |
+| VIP 曲目不可播 | `qq-cookie.txt` 缺失或已过期 → 用 `update-meting-cookie.sh` 更新后 `test` |
+| `容器已就绪` 之后自测全不可播、且是 `text/html` | 多半是 Cookie 没生效或 PHP 警告污染响应（本仓库 Dockerfile 已修）→ `bash scripts/deploy-meting.sh logs` |
 
