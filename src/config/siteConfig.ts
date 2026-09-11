@@ -7,7 +7,7 @@ export const siteConfig: SiteConfig = {
 	title: "YiCheng'S Blog",
 	subtitle: "Yicheng's personal blog",
 	siteURL: "https://cnyicheng.top/", // 部署时再改成你的域名，本地开发不需要改
-	siteStartDate: "2025-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
+	siteStartDate: "2026-09-12", // 站点开始运行日期（"运行天数"用 Math.ceil 计算，设成今天即显示 1 天）
 
 	lang: SITE_LANG,
 
@@ -184,24 +184,21 @@ export const siteConfig: SiteConfig = {
 		// }
 	],
 
-	// 字体配置
+	// 字体配置（已改用系统默认字体：fontFamily 留空后，由 Layout.astro 注入 system-ui 系统字体链）
 	font: {
-		// 注意：自定义字体需要在 src/styles/main.css 中引入字体文件
-		// 注意：字体子集优化功能目前仅支持 TTF 格式字体,开启后需要在生产环境才能看到效果,在Dev环境下显示的是浏览器默认字体!
+		// 如需恢复自定义字体：填回 fontFamily / localFonts，
+		// 并在 src/styles/main.css 中恢复对应的 @font-face 声明。
 		asciiFont: {
-			// 英文字体 - 优先级最高
-			// 指定为英文字体则无论字体包含多大范围，都只会保留 ASCII 字符子集
-			fontFamily: "ZenMaruGothic-Medium",
+			fontFamily: "",
 			fontWeight: "400",
-			localFonts: ["ZenMaruGothic-Medium.ttf"],
-			enableCompress: true, // 启用字体子集优化，减少字体文件大小
+			localFonts: [],
+			enableCompress: false,
 		},
 		cjkFont: {
-			// 中日韩字体 - 作为回退字体
-			fontFamily: "萝莉体 第二版",
+			fontFamily: "",
 			fontWeight: "500",
-			localFonts: ["loli.ttf"],
-			enableCompress: true, // 启用字体子集优化，减少字体文件大小
+			localFonts: [],
+			enableCompress: false,
 		},
 	},
 	showLastModified: true, // 控制"上次编辑"卡片显示的开关

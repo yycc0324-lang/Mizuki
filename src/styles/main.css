@@ -26,22 +26,8 @@
   --breakpoint-xl: 1920px;
 }
 
-/* 导入 ZenMaruGothic-Medium 字体 */
-@font-face {
-  font-family: "ZenMaruGothic-Medium";
-  src: url("/assets/font/ZenMaruGothic-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-display: swap;
-}
-
-/* 导入 萝莉体 第二版 字体 */
-@font-face {
-  font-family: "萝莉体 第二版";
-  src: url("/assets/font/loli.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
+/* 自定义字体已停用（改用系统默认字体）：
+   如需恢复，请在此处重新添加 @font-face，并在 src/config/siteConfig.ts 的 font 中填回 fontFamily / localFonts。 */
 
 /* 确保平滑滚动，并稳定滚动条宽度以避免布局左右抖动 */
 html {

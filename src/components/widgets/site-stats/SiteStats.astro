@@ -61,17 +61,11 @@ function formatNumber(num: number): string {
 	return num.toLocaleString();
 }
 
-// 获取最新文章日期（忽略置顶状态，只按发布日期排序）
-const latestPost = posts.reduce((latest, post) => {
-	if (!latest) {
-		return post;
-	}
-	return post.data.published > latest.data.published ? post : latest;
-}, posts[0]);
-
-const lastPostDate = latestPost
-	? latestPost.data.published.toISOString()
-	: null;
+// 「最后活动」= 距本次构建过了多久：
+//   - 每次构建（本地 pnpm build / scripts/deploy-baota.sh / push 触发的 CI 构建）都会刷新为构建当下 → 显示 0 天
+//   - 不重新构建时，天数随日期自然递增（1 天前、2 天前…）
+// 注意：pnpm dev 下每次请求都会重新求值，故开发环境恒为 0 天（生产是静态构建，值固定）
+const lastActivityDate = new Date().toISOString();
 
 const stats = [
 	{
@@ -153,7 +147,7 @@ const stats = [
 	</div>
 </WidgetLayout>
 
-<script is:inline define:vars={{ siteStartDate, lastPostDate }}>
+<script is:inline define:vars={{ siteStartDate, lastActivityDate }}>
 	function updateDynamicStats() {
 		const today = new Date();
 
@@ -171,14 +165,14 @@ const stats = [
 			});
 		}
 
-		// 更新最后活动时间
-		if (lastPostDate) {
-			const lastPost = new Date(lastPostDate);
-			const timeSinceLastPost = Math.abs(
-				today.getTime() - lastPost.getTime(),
+		// 更新最后活动时间（距本次构建的天数）
+		if (lastActivityDate) {
+			const lastActivity = new Date(lastActivityDate);
+			const timeSinceLastActivity = Math.abs(
+				today.getTime() - lastActivity.getTime(),
 			);
 			const daysSinceLastUpdate = Math.floor(
-				timeSinceLastPost / (1000 * 60 * 60 * 24),
+				timeSinceLastActivity / (1000 * 60 * 60 * 24),
 			);
 
 			const lastUpdateElements = document.querySelectorAll(
