@@ -283,7 +283,11 @@ $api->format(true);
 
 1. 电脑浏览器打开 <https://y.qq.com> 并**登录有绿钻/VIP 的账号**；
 2. 按 `F12` → `Application / 应用` → 左侧 `Cookies` → `https://y.qq.com`；
-3. 至少需要这几项（可整条复制更保险）：`uin`、`qm_keyst`、`qqmusic_key`；
+3. 至少需要这几项：`uin`（纯数字）、`qm_keyst`、`qqmusic_key`；
+   ⚠️ **整条复制有个坑**：浏览器 Cookie 里的 `ct=`（客户端类型，值形如 `11`/`24`）会让 QQ 的
+   vkey 接口拒绝下发播放地址 —— 症状是「VIP 曲目拿不到地址」，严重时**连原本能播的免费曲目
+   也全部变成 `text/html`**。`scripts/update-meting-cookie.sh` 已内置剔除逻辑（执行时会打印
+   「已剔除客户端标识字段 ct=」），所以整条复制也能直接用；若是手工拼接，务必不要带 `ct=`。
 4. 拼成一行 `k=v; k=v` 形式，例如：
 
 ```
@@ -399,10 +403,53 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 | 歌曲列表能出来，但点了没声音 | 第 4 节坑 1：JSON 里的 `url` 是 `http://` → 把 `API_URI` 写死为 https 域名 |
 | 返回的 `url/pic` 域名不对 | 反代缺少 `proxy_set_header Host $host;` |
 | 只有免费曲能播，VIP 曲目空地址 | Cookie 未配置或已过期，重新获取 `qm_keyst` |
+| 配了 Cookie 后**连免费曲也不可播**（`url` 全返回 `text/html`） | Cookie 里带了 `ct=`（客户端类型）→ 去掉该字段后重跑 `bash scripts/update-meting-cookie.sh`（脚本已自动剔除并会打印提示）；对照验证见下方「Cookie 字段 A/B 自测」 |
 | 返回 `{"error":"unknown playlist id"}` | 歌单 ID 与 `server` 不匹配（如 QQ 歌单 ID 配了 `server=netease`），或歌单被删/设为私密 |
 | 接口偶发 502/504 | 平台接口慢，调大 `proxy_read_timeout`（片段里已设 30s），或开启 `CACHE` |
 | 容器起不来 | `docker compose logs --tail=100`；常见是镜像拉取失败（配加速器）或 8899 端口被占用 |
 | 首页加载变慢 | 播放列表是**客户端异步获取**的，不影响首屏；若确实慢，开启 `CACHE` 把结果缓存到本地文件 |
+
+### Cookie 字段 A/B 自测（定位 `ct` 类问题的方法）
+
+怀疑 Cookie 有问题时，不用重建镜像、不用重启容器，直接把一段对照 PHP 丢进容器执行即可
+（`cache/` 目录是挂载出来的，宿主机写文件容器里立刻可见）：
+
+```bash
+DEPLOY_DIR="${DEPLOY_DIR:-$HOME/meting-local}"   # 服务器上为 /www/wwwroot/meting
+mkdir -p "$DEPLOY_DIR/meting-api/cache"
+cat > "$DEPLOY_DIR/meting-api/cache/probe.php" <<'PHP'
+<?php
+include '/var/www/html/src/Meting.php';
+use Metowolf\Meting;
+
+$full = trim(file_get_contents('/var/www/html/qq-cookie.txt'));
+$min  = '';
+foreach (['uin', 'qm_keyst', 'qqmusic_key'] as $k) {
+    if (preg_match('/(?:^|;\s*)' . $k . '=([^;]*)/', $full, $m)) {
+        $min .= ($min === '' ? '' : '; ') . $k . '=' . trim($m[1]);
+    }
+}
+foreach (['完整 cookie' => $full, '仅登录三件套' => $min] as $label => $ck) {
+    $api = new Meting('tencent');
+    $api->format(true);
+    $api->cookie($ck);
+    $j = json_decode($api->url('001NgljR0RUhy1', 320), true);   // 任取一首 VIP 曲目
+    printf("%-16s => %s\n", $label, empty($j['url']) ? '(空地址 ✗)' : '可播 ✓');
+}
+PHP
+
+docker exec meting php /var/www/html/cache/probe.php
+```
+
+实测输出（Cookie 里带 `ct=` 时）：
+
+```
+完整 cookie   => (空地址 ✗)
+仅登录三件套  => 可播 ✓
+```
+
+> 这说明问题出在 **Cookie 字段本身**，而不是账号权限、出网或反代配置。
+> 想确定具体是哪个字段，把「完整 cookie」逐个字段剔除后再测，能恢复的那个就是元凶（本项目实测为 `ct`）。
 
 ---
 

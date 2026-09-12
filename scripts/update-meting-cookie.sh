@@ -65,6 +65,25 @@ cookie="$(printf '%s' "$raw" | grep -v '^[[:space:]]*#' | tr -d '\r\n' |
 	sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
 [ -n "$cookie" ] || die "Cookie 内容为空（剪贴板里没有东西？）"
 
+# ---------- 1.5) 剔除会破坏鉴权的客户端标识字段 ----------
+# 实测（容器内 A/B 对照，详见 docs/DEPLOYMENT_METING.md 第八节故障排查）：
+#   浏览器「整条复制」拿到的 Cookie 里含 `ct=`（客户端类型，值形如 11/24），
+#   它会让 QQ 音乐的 vkey 接口拒绝下发播放地址 ——
+#   现象：VIP 曲目拿不到地址；严重时连原本能播的免费曲目也全部变成 text/html。
+#   逐个字段剔除的对照测试中，只有去掉 `ct` 能恢复，把它加回最小集合即立刻复现。
+# 因此这里统一剔除客户端标识字段，登录凭证（uin / qm_keyst / qqmusic_key / psrf_*）全部保留。
+had_ct=0
+if printf '%s' "$cookie" | grep -qE '(^|;[[:space:]]*)ct='; then
+	had_ct=1
+fi
+cookie="$(printf '%s' "$cookie" | tr ';' '\n' |
+	sed 's/^[[:space:]]*//; s/[[:space:]]*$//' |
+	grep -v '^$' | grep -vE '^ct=' | paste -sd';' - | sed 's/;/; /g')"
+[ -n "$cookie" ] || die "剔除 ct 字段后 Cookie 变空了，请检查复制的内容"
+if [ "$had_ct" = "1" ]; then
+	log "已剔除客户端标识字段 ct=（保留它会导致 QQ 拒绝下发播放地址）"
+fi
+
 # ---------- 2) 校验关键字段 ----------
 ok=1
 if printf '%s' "$cookie" | grep -qE '(^|[;[:space:]])uin=[0-9]+'; then
