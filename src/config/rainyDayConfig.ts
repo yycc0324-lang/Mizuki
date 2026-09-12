@@ -9,6 +9,10 @@ import type { RainyDayConfig } from "../types/config";
  *     而 Swup 只替换 <main>，所以切页不会重建、无需处理 swup 生命周期）
  *   - 背景图直接复用横幅图片（见 Banner 传入的 images），无需额外素材
  *   - Three.js 通过动态 import 懒加载，不进首屏
+ *   - HiDPI 适配（重要）：4K / Retina 上 devicePixelRatio≠1，而上游 v1.0.6 的
+ *     u_resolution 用 CSS 像素、画布却被 setPixelRatio 放大 dpr 倍 → uv 越界、
+ *     背景贴图错位（表现为「壁纸被拉伸/糊成一片」）。组件在创建实例后统一把
+ *     渲染像素比压回 1（详见 RainyDay.astro 的 createInstance），dpr=1 时无影响
  *
  * 关闭方式：把 enable 改为 false 即可完全恢复原样（水波纹会自动回来）
  */
@@ -32,7 +36,7 @@ export const rainyDayConfig: RainyDayConfig = {
 	speed: 1, // 下落速度：0.2 缓慢、0.5 中速
 	brightness: 0.9, // 亮度
 	normal: 1.0, // 法线强度（雨滴立体感）
-	zoom: 2, // 缩放（背景图放大比例）
+	zoom: 2, // 雨滴图案缩放：值越大雨滴越大、越稀疏（0.1-3；不是"背景图放大比例"）
 	blurIntensity: 0.2, // 玻璃模糊（建议 0-1，太大会糊掉背景）
 	blurIterations: 12, // 模糊迭代（越小越快）
 	lightning: false, // 闪电（想要戏剧性可开）

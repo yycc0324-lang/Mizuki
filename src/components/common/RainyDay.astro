@@ -43,6 +43,13 @@
 		pause: () => void;
 		resume: () => void;
 		destroy: () => void;
+		/**
+		 * 上游实例内部的三方 renderer（私有字段，这里只用它修正 HiDPI 的渲染像素比）
+		 *
+		 * 为什么需要：见 createInstance() 里的详细说明 —— 不把像素比压回 1，
+		 * 4K/Retina（devicePixelRatio≠1）下背景贴图会错位（壁纸"被拉伸"）。
+		 */
+		renderer?: { setPixelRatio?: (ratio: number) => void };
 	}
 
 	const win = window as Window & {
@@ -444,10 +451,30 @@
 		p?: RainyPlacement,
 	): Promise<RainyInstance> {
 		const { RainyWindow } = await import("@arayui/rainy-day");
-		return new RainyWindow(
+		const instance = new RainyWindow(
 			target,
 			buildInstanceOptions(bg, p),
 		) as unknown as RainyInstance;
+
+		// ── 修正上游 v1.0.6 的 HiDPI 缺陷（dpr≠1 时背景贴图错位）──────────────
+		// 上游初始化顺序：
+		//   u_resolution = (container.clientWidth, clientHeight)   ← CSS 像素
+		//   renderer.setPixelRatio(min(devicePixelRatio, 2))       ← 后备缓冲放大 dpr 倍
+		// 而着色器里是：
+		//   textureCoord = gl_FragCoord.xy / u_resolution.xy;      ← gl_FragCoord 是「设备像素」
+		// 于是只要 dpr≠1，uv 的实际范围就是 [0, dpr] 而不是 [0, 1]：
+		//   · 贴图被压进屏幕一角，其余部分是边缘像素拖影 → 4K/HiDPI 上壁纸"被拉伸、糊成一片"
+		//   · 结尾的暗角 1 - dot(uv-0.5, uv-0.5) 同样错位 → 征文区底色整体偏暗
+		// 把渲染像素比压回 1，让「后备缓冲 == CSS 尺寸 == u_resolution」，uv 回到 [0, 1]。
+		//
+		// 回归安全性：dpr=1 时上游本来就是 setPixelRatio(1)，此处是空操作 →
+		// 1080p / 2K（缩放 100%）观感完全不变；dpr=2 时才真正生效。
+		// 唯一可见差异：雨滴图案按画布像素计算（上游 REFERENCE_SIZE=1000 硬编码），
+		// 修正后 HiDPI 上的"视口占比"与 dpr=1 一致（即与设计一致）；
+		// 若想回到更细密的雨，把 rainyDayConfig.zoom 调小（zoom 越大雨滴越大越稀疏）。
+		instance.renderer?.setPixelRatio?.(1);
+
+		return instance;
 	}
 
 	// ---------- 水波纹联动（配置要求时隐藏 SSR 出来的水波纹）----------
