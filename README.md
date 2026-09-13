@@ -306,7 +306,7 @@ cp .env.example .env
 ENABLE_CONTENT_SYNC=true
 CONTENT_REPO_URL=https://github.com/your-username/Mizuki-Content.git
 
-# 3. Sync content
+# 3. Sync  content
 pnpm run sync-content
 ```
 
