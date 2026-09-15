@@ -502,10 +502,14 @@ export interface RainyDayConfig {
 	postProcessing: boolean; // 后处理（开启更细腻，稍耗性能）
 	fps: number; // 限帧 15-120（省电关键）
 
+	// ↓ 正文区雨雾（与 Shirone 一致）
+	mistStrength?: number; // 正文区雨雾浓度 0-1（默认 0.4；1 = 正文区也不透明）
+	mistFadeVh?: number; // 蒙版过渡长度 vh（默认 12）
+
 	// ↓ 行为开关
 	disableOnMobile: boolean; // 移动端不启用（省电）
 	respectReducedMotion: boolean; // 尊重系统「减少动态效果」设置
-	autoDisableWaves: boolean; // 雨窗开启时自动关闭横幅水波纹
+	autoDisableWaves: boolean; // 雨窗开启时淡化横幅水波纹（0.1，见 styles/banner.css）
 	pauseWhenHidden: boolean; // 标签页不可见时暂停渲染
 	lazy: boolean; // 动态 import 懒加载（Three.js 不进首屏）
 	debug: boolean; // 是否把实例与控制台调参接口挂到 window（调完可关掉）

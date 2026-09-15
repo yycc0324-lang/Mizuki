@@ -20,9 +20,10 @@ export const rainyDayConfig: RainyDayConfig = {
 	enable: true, // 总开关
 	// 首次访问时的雨滴偏好（用户可在导航栏「雨滴」按钮的面板里随时切换，选择会记进浏览器 localStorage）
 	// 横幅模式下雨："off" 无雨 | "banner" 仅横幅内 | "fullscreen" 横幅内 + 征文区都下雨
-	//   "fullscreen" 会挂两层：横幅区 = 横幅图 + 雨；征文区 = 页面背景色 + 雨
-	//   （征文区底层不铺图片、卡片文字不受影响；两层互不干扰，横幅图片与水波纹都完好）
-	defaultInBannerMode: "banner",
+	//   "fullscreen"（默认，与 Shirone 一致）挂两层：横幅区 = 横幅图 + 雨（不透明）；
+	//   征文区 = 同一个横幅图 + 雨，外层叠 Shirone 的竖向蒙版 →
+	//   banner 带不透明、往下 12vh 过渡到 mistStrength(0.4)，正文区呈现「壁纸 + 雨雾」
+	defaultInBannerMode: "fullscreen",
 	defaultInFullscreenMode: "on", // 全屏壁纸模式下雨："off" 无雨 | "on" 有雨
 	showSwitch: true, // 是否在导航栏显示「雨滴」按钮
 	bgFadeMs: 500, // 轮播换图时雨层淡出→换图→淡入的时长（毫秒；0 = 直接切换）
@@ -44,10 +45,15 @@ export const rainyDayConfig: RainyDayConfig = {
 	postProcessing: true, // 后处理
 	fps: 30, // 限帧，省电关键
 
+	// 正文区雨雾（与 Shirone 一致）：整页雨幕在 banner 带内不透明，
+	// 往下在 mistFadeVh 内过渡到 mistStrength → 正文区呈现「壁纸 + 雨雾」
+	mistStrength: 0.4, // 正文区雨雾浓度 0-1：0 = 看不到雨，1 = 不透明（底色被壁纸替换）
+	mistFadeVh: 12, // 蒙版过渡长度（vh）：从 banner 带底部起多少 vh 内过渡
+
 	// 行为开关
 	disableOnMobile: true, // 移动端默认不启用
 	respectReducedMotion: true, // 系统开了「减少动态效果」就不渲染
-	autoDisableWaves: false, // 雨窗开启时是否关闭横幅水波纹（false = 两者叠加共存）
+	autoDisableWaves: true, // 雨窗开启时把横幅水波纹淡化到 10%（保留可见；不再硬隐藏）
 	pauseWhenHidden: true, // 切到别的标签页时暂停渲染
 	lazy: true, // 懒加载 Three.js
 

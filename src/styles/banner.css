@@ -846,3 +846,27 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
     max-height: 40px !important;
   }
 }
+
+/* ============================================================
+   雨天水波纹淡化（与 Shirone 一致）
+   标记由 src/components/common/RainyDay.astro 维护：横幅内挂了雨时给
+   <html data-rainy-active="true">。不再硬隐藏（display:none），而是整体淡化。
+   正文区的「壁纸雨雾」由 RainyDay 的 mistMask 负责（见 applyMistMask）。
+   ============================================================ */
+:root {
+  --waves-rainy-opacity: 0.1;
+}
+
+#header-waves {
+  transition: opacity 400ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+html[data-rainy-active="true"] #header-waves {
+  opacity: var(--waves-rainy-opacity);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #header-waves {
+    transition: none;
+  }
+}

@@ -6,14 +6,14 @@
  *   1) 特效库的 shader 输出 alpha 恒为 1（不透明）且自带背景图 → 每个实例只能有一种背景。
  *      挂载点按「壁纸模式 + 用户偏好」决定（可同时挂载多个）：
  *        banner               → #banner-wrapper 内，背景 = 当前横幅图（z-[1]，低于水波纹 z-5）
- *        viewport-fullscreen  → body 下的 fixed 全屏层，背景 = 由 --page-bg 生成的极淡同色微渐变
- *                               （z-[9]：在横幅 z-10 之下 → 上方图片区看到的是"图 + 雨"，
- *                                下方征文区看到的是"干净背景 + 雨"，**底层不含任何图片**）
+ *        viewport-fullscreen  → body 下的 fixed 全屏层，背景 = 当前横幅图（与 Shirone 一致），
+ *                               外层按 Shirone 的 mistMask 做竖向蒙版：banner 带不透明 →
+ *                               mistFadeVh 内过渡到 mistStrength → 正文区是「壁纸 + 雨雾」
  *        wallpaper-fullscreen → [data-fullscreen-wallpaper] 内，背景 = 当前全屏壁纸
  *   2) 「横幅模式 + 全屏」= banner + viewport-fullscreen 两个实例同时挂载：
- *        上方图片区（横幅 35vh）→ 实例 A：横幅图 + 雨
- *        下方征文区（主内容）  → 实例 B：页面背景色微渐变 + 雨（没有图片，卡片文字不受影响）
- *      这是"全屏雨"在横幅模式下唯一正确的形态：图片只属于横幅区，不会铺到征文区底层。
+ *        上方图片区（横幅 35vh）→ 实例 A：横幅图 + 雨（不透明）
+ *        下方征文区（主内容）  → 实例 B：同一个横幅图 + 雨，外层叠 Shirone 的竖向蒙版
+ *                               （banner 带不透明，往下 12vh 过渡到 mistStrength 0.4）
  *   3) 换图过渡用「双层真交叉淡入」：新建一层渲染新图并淡入，完成后销毁旧实例/旧层。
  *      这样全程不透明，**不会露出横幅自身的 Ken Burns / crossfade**，也不会露出水波纹交界。
  *      交叉时长直接读轮播自己的过渡时长（横幅读 #banner-carousel 的 data-fade-ms）。
@@ -75,7 +75,7 @@
 		"viewport-fullscreen": {
 			parent: "body",
 			// z-[9] < 横幅 z-10：横幅图片、文字与流动水波纹始终可见；
-			// 底色是 --page-bg 的微渐变（不是图片）→ 征文区底层绝不会出现壁纸图
+			// 背景 = 当前横幅图 + Shirone 的竖向蒙版（见 applyMistMask）→ 正文区是壁纸雨雾
 			id: "rainy-window-fullscreen",
 			className: "fixed inset-0 z-[9] pointer-events-none",
 		},
@@ -86,14 +86,19 @@
 		},
 	};
 
-	/** 只有"横幅内"这一个位置的背景来自横幅轮播换图 */
+	/**
+	 * 哪些位置的背景来自「横幅轮播换图」
+	 *
+	 * 与 Shirone 一致：正文区（视口全屏层）也用当前横幅图做折射源，
+	 * 外面再叠一层竖向蒙版（见 applyMistMask）→ 正文区呈现「壁纸 + 雨雾」。
+	 */
 	function usesBannerCarousel(p: RainyPlacement): boolean {
-		return p === "banner";
+		return p === "banner" || p === "viewport-fullscreen";
 	}
 
-	/** 该位置是否需要跟随轮播换图（征文区的底色是渐变，只在主题变化时重建） */
-	function followsCarousel(p: RainyPlacement): boolean {
-		return p !== "viewport-fullscreen";
+	/** 该位置是否需要跟随轮播换图（正文区现在也用横幅图，故同样跟随） */
+	function followsCarousel(_p: RainyPlacement): boolean {
+		return true;
 	}
 
 	/** 单个挂载点的运行状态（一个位置一套实例，互不干扰） */
@@ -286,10 +291,16 @@
 		}
 	}
 
-	/** 该挂载位置应该使用的背景素材 */
+	/**
+	 * 该挂载位置应该使用的背景素材
+	 *
+	 * 与 Shirone 一致：正文区也用**当前横幅图**做折射源（外层再叠竖向蒙版 → 壁纸雨雾），
+	 * 只有取不到横幅图时才退回「页面底色微渐变」兜底。
+	 */
 	function backgroundFor(p: RainyPlacement): string | undefined {
-		if (p === "viewport-fullscreen") return viewportGradientUrl();
-		return pickVisibleImage(p);
+		const image = pickVisibleImage(p);
+		if (image) return image;
+		return p === "viewport-fullscreen" ? viewportGradientUrl() : undefined;
 	}
 
 	// ---------- 读取轮播自身的过渡时长（用于对齐交叉淡入）----------
@@ -386,10 +397,8 @@
 			Partial<{ postProcessing: boolean; brightness: number }>
 		>
 	> = {
-		"viewport-fullscreen": {
-			postProcessing: false,
-			brightness: VIEWPORT_LAYER_BRIGHTNESS,
-		},
+		// 正文区背景从「页面底色微渐变」换成横幅图后（与 Shirone 一致），
+		// 原先为浅色底定制的 postProcessing / brightness 覆盖不再需要。
 	};
 
 	function buildInstanceOptions(bg?: string, p?: RainyPlacement) {
@@ -435,7 +444,28 @@
 			parent.appendChild(el);
 		}
 		el.className = className;
+		if (p === "viewport-fullscreen") applyMistMask(el);
 		return el;
+	}
+
+	/**
+	 * 正文区（视口全屏层）的竖向蒙版 —— 与 Shirone 的 mistMask 同构
+	 *
+	 * banner 带（0 → --banner-height）恒为不透明：那段由横幅内的雨层接替壁纸；
+	 * 往下在 mistFadeVh 内过渡到 mistStrength → 正文区是「浅色底 + 壁纸雨雾」。
+	 * alpha 写死为字面量（不放进 rgba() 的 var()），避免解析兼容性风险。
+	 */
+	function applyMistMask(el: HTMLElement): void {
+		const alpha = Math.min(Math.max(num(cfg.mistStrength, 0.4), 0), 1).toFixed(2);
+		const fadeVh = Math.round(num(cfg.mistFadeVh, 12));
+		const mask = [
+			"linear-gradient(to bottom, #000 0,",
+			"#000 var(--banner-height, 35vh),",
+			`rgba(0, 0, 0, ${alpha}) calc(var(--banner-height, 35vh) + ${fadeVh}vh),`,
+			`rgba(0, 0, 0, ${alpha}) 100%)`,
+		].join(" ");
+		el.style.setProperty("-webkit-mask-image", mask);
+		el.style.setProperty("mask-image", mask);
 	}
 
 	function createLayer(parent: HTMLElement): HTMLDivElement {
@@ -477,15 +507,17 @@
 		return instance;
 	}
 
-	// ---------- 水波纹联动（配置要求时隐藏 SSR 出来的水波纹）----------
-	function applyWavesVisibility(): void {
-		const waves = document.getElementById("header-waves");
-		if (!waves) return;
-		// 只有"横幅内挂了雨"才需要按配置隐藏水波纹；征文区的雨在横幅之下，不影响水波纹
+	// ---------- 水波纹联动（雨天淡化，与 Shirone 一致）----------
+	// 不再硬隐藏（display:none）：雨天给 <html> 打 data-rainy-active，
+	// 由 styles/banner.css 把水波纹整体淡到 --waves-rainy-opacity（默认 0.1），
+	// 过渡交给 CSS，天然遵守 prefers-reduced-motion。
+	function applyWavesState(): void {
+		const root = document.documentElement;
+		// 只有「横幅内挂了雨」才需要淡化水波纹；征文区的雨在横幅之下，不影响水波纹
 		if (cfg.autoDisableWaves && contexts.has("banner")) {
-			waves.style.display = "none";
+			root.dataset.rainyActive = "true";
 		} else {
-			waves.style.removeProperty("display");
+			delete root.dataset.rainyActive;
 		}
 	}
 
@@ -630,7 +662,7 @@
 			win.__rainyDayReady = true;
 
 			if (followsCarousel(p)) watchCarousel(p);
-			applyWavesVisibility();
+			applyWavesState();
 		} catch (err) {
 			console.warn(`[rainy-day] 挂载失败（${p}）：`, err);
 			unmountOne(p);
@@ -660,7 +692,7 @@
 			? contexts.get(mainPlacement)?.instance
 			: undefined;
 		win.__rainyDayReady = contexts.size > 0;
-		applyWavesVisibility();
+		applyWavesState();
 	}
 
 	function unmountAll(): void {
